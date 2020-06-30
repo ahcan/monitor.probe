@@ -85,7 +85,7 @@ LOGGING = {\n
     }\n
 }\n
 \n
-"""%(host, masterapi, slaveapi, matserdb)
+"""%(host, masterapi, slaveapi, masterdb)
         f = open(self.filedir, 'w')
         f.write(str+"\n")
         f.close()
