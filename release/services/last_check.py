@@ -1,4 +1,3 @@
-#!/usr/bin/python
 import json
 import time
 import logging
@@ -14,8 +13,8 @@ from snmp_agent import Snmp
 class LastCheck(object):
     """docstring for LastCheck"""
     def __init__(self):
-        self.logger = logging.getLogger(__name__)
-
+        self.logger = logging.getLogger(self.__class__.__name__)
+        #self.logger.debug("LastCheck =====")
 
     def check_source(self, source, last_status, id, agent, name, type):
         """
@@ -28,7 +27,7 @@ class LastCheck(object):
         """
         ffmpeg = Ffmpeg()
         check = ffmpeg.check_source(source)
-        # print "%s : %s"%(check, last_status)
+        print "%s : %s"%(check, last_status)
         self.logger.debug("Curent :%s <> Last: %s, %s %s %s"%(check, last_status, source, name, type))
         if check != last_status:
             date_time = DateTime()
@@ -94,14 +93,14 @@ class LastCheck(object):
 
     def check(self):
         if not SYSTEM["monitor"]["SOURCE"]:
-            message = "Black screen monitor is disable, check your config!"
+            message = "Source monitor is disable, check your config!"
             self.logger.error(message)
             print message
             time.sleep(60)
             exit(0)
         ancestor_thread_list = []
         file = File()
-        profile_list = file.read()
+        profile_list = file.get_check_list()
         profile_list = profile_list[0:len(profile_list)-1]
         if(profile_list):
             for line in profile_list.split('\n'):
@@ -122,5 +121,4 @@ class LastCheck(object):
                 ancestor_thread_list.append(t)
         for ancestor_thread in ancestor_thread_list:
             ancestor_thread.join()
-        time.sleep(5)
-
+        time.sleep(10)

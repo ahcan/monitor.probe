@@ -1,4 +1,3 @@
-#!/usr/bin/python
 import os
 import logging
 from config.config import SYSTEM

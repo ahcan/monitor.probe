@@ -1,4 +1,3 @@
-#!/usr/bin/python
 import sys
 import time
 import logging
@@ -11,7 +10,7 @@ from config.config import SYSTEM
 class FirstCheck(object):
     """docstring for FirstCheck"""
     def __init__(self):
-        self.logger = logging.getLogger(__name__)
+        self.logger = logging.getLogger(self.__class__.__name__)
 
     def check_source(self, source, last_status, id, agent, thread, name, type):
         """
@@ -24,12 +23,12 @@ class FirstCheck(object):
         """
         ffmpeg = Ffmpeg()
         check = ffmpeg.check_source(source)
-        # print "%s : %s"%(check, last_status)
-        self.logger.debug("Curent :%s <> Last: %s"%(check, last_status))
+        #print "%s : %s"%(check, last_status)
+        self.logger.debug("Source: %s Curent :%s <> Last: %s"%(source, check, last_status))
         if check != last_status:
             json_data = """{"source":"%s","status":%s,"pa_id":%s,"agent": "%s","thread":%s,"name":"%s","type":"%s"}"""%(source, last_status, id, agent, thread, name, type)
             file = File()
-            replicate = file.append(json_data)
+            replicate = file.append_to_check_list(json_data)
             if not replicate:
                 self.logger.info("Doubt curent %s <> Last %s : %s"%(check, last_status, str(json_data)))
 
@@ -55,9 +54,7 @@ class FirstCheck(object):
             for profile in profile_list:
                 while threading.activeCount() > profile['thread']:
                     time.sleep(1)
-                t = threading.Thread(target=self.check_source,
-                    args=(profile['protocol']+'://'+profile['ip'],
-                        profile['status'],
+                t = threading.Thread(target=self.check_source, args=(profile['protocol']+'://'+profile['ip'], profile['status'],
                         profile['id'],
                         profile['agent'],
                         profile['thread'],

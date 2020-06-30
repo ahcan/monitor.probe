@@ -20,7 +20,7 @@ class Profile(object):
         self.logger.warning("Master Api: " + http_master_rsp["message"])
 
         if API["slave"]["ACTIVE"]:
-            slave_api = ApiProfileDAL(config.SLAVE_API)
+            slave_api = ApiProfileDAL("slave")
             http_slave_rsp = slave_api.get()
             if http_slave_rsp["status"] == 200:
                 self.logger.info("Slave Api: " + http_slave_rsp["message"])
@@ -51,7 +51,7 @@ class Profile(object):
         self.logger.warning("Master Api: " + http_master_rsp["message"])
 
         if API["slave"]["ACTIVE"]:
-            slave_api = ApiProfileDAL(config.SLAVE_API)
+            slave_api = ApiProfileDAL("slave")
             http_slave_rsp = slave_api.get_video_check_list()
             if http_slave_rsp["status"] == 200:
                 self.logger.info("Slave Api: " + http_slave_rsp["message"])
@@ -79,10 +79,10 @@ class Profile(object):
             self.logger.info("Master Api: " + http_master_rsp["message"])
             return http_master_rsp
         eror = "Master Api: " + http_master_rsp["message"] + "\n"
-        self.logger.warning("Master Api: " + http_master_rsp["message"])
+        self.logger.warning("Master Api Put id ({0}): ".format(id) + http_master_rsp["message"])
 
         if API["slave"]["ACTIVE"]:
-            slave_api = ApiProfileDAL(config.SLAVE_API)
+            slave_api = ApiProfileDAL("slave")
             http_slave_rsp = slave_api.put(id, data)
             if http_slave_rsp["status"] == 202:
                 self.logger.info("Slave Api: " + http_slave_rsp["message"])
@@ -95,6 +95,37 @@ class Profile(object):
             master_db = DbProfileDAL("master")
             db_rsp = master_db.put(id, data)
             if db_rsp["status"] == 202:
+                self.logger.info("Database: " + db_rsp["message"])
+                return db_rsp
+            else:
+                eror += "Database: " + db_rsp["message"] + "\n"
+                self.logger.warning("Database: " + db_rsp["message"])
+        print eror
+        self.logger.error(eror)
+        return http_master_rsp
+
+    def get_by_ip_multicast(self, source):
+        http_master_rsp = self.master_api.get_by_ip_multicast(source)
+        if http_master_rsp["status"] == 200:
+            self.logger.info("Master Api: " + http_master_rsp["message"])
+            return http_master_rsp
+        eror = "Master Api: " + http_master_rsp["message"] + "\n"
+        self.logger.warning("Master Api: " + http_master_rsp["message"])
+
+        if API["slave"]["ACTIVE"]:
+            slave_api = ApiProfileDAL("slave")
+            http_slave_rsp = slave_api.get_by_ip_multicast(source)
+            if http_slave_rsp["status"] == 200:
+                self.logger.info("Slave Api: " + http_slave_rsp["message"])
+                return http_slave_rsp
+            else:
+                eror += "Slave Api: " + http_slave_rsp["message"] + "\n"
+                self.logger.warning("Slave Api: " + http_slave_rsp["message"])
+
+        if DATABASE["master"]["ACTIVE"]:
+            master_db = DbProfileDAL("master")
+            db_rsp = master_db.get_by_ip_multicast(source)
+            if db_rsp["status"] == 200:
                 self.logger.info("Database: " + db_rsp["message"])
                 return db_rsp
             else:
@@ -119,7 +150,7 @@ class Snmp(object):
         self.logger.warning("Master Api: " + http_master_rsp["message"])
 
         if API["slave"]["ACTIVE"]:
-            slave_api = ApiSnmpDAL(config.SLAVE_API)
+            slave_api = ApiSnmpDAL("slave")
             http_slave_rsp = slave_api.get()
             if http_slave_rsp["status"] == 200:
                 self.logger.info("Slave Api: " + http_slave_rsp["message"])
