@@ -3,7 +3,7 @@ package on OS:
 - yum install python-pillow
 - yum install python-devel
 - yum install gcc
-- yum install mysql-python
+- yum install MySQL-python
 
 package python request:
 - pip install psutil
