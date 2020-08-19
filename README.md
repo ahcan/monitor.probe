@@ -6,7 +6,7 @@ package on OS:
 - yum install MySQL-python
 
 package python request:
-- pip install psutil
+- pip install psutil or yum install python2-psutil.x86_64
 - pip install MySQL-python
 - pip install requests
 pip  install --upgrade setuptools
